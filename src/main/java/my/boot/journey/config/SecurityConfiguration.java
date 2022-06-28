@@ -28,16 +28,21 @@ public class SecurityConfiguration {
 
         http.authorizeRequests()
                 .antMatchers("/login").permitAll()
+                .antMatchers("/h2-console*").permitAll()
                 .antMatchers("/rest*").hasRole("USER")
                 .anyRequest().authenticated()
                 .filterSecurityInterceptorOncePerRequest(true)
                 .and().formLogin()
-                .successHandler(appAuthenticationSuccessHandler)
-                .failureHandler(appAuthenticationFailHandler)
+//                .successHandler(appAuthenticationSuccessHandler)
+//                .failureHandler(appAuthenticationFailHandler)
                 .and()
                 .logout().permitAll();
 
-        http.headers().frameOptions().sameOrigin();
+        //to allow H2
+        http.csrf().ignoringAntMatchers("/h2-console/**");
+        http.headers().frameOptions().disable();
+
+//        http.headers().frameOptions().sameOrigin();
 
         return http.build();
     }

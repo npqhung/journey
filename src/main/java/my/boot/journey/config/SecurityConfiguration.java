@@ -1,6 +1,9 @@
 package my.boot.journey.config;
 
+import my.boot.journey.security.AppAuthenticationFailureHandler;
+import my.boot.journey.security.AppAuthenticationSuccessHandler;
 import my.boot.journey.security.AppUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +14,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfiguration {
 
+    @Autowired
+    AppAuthenticationSuccessHandler appAuthenticationSuccessHandler;
+    @Autowired
+    AppAuthenticationFailureHandler appAuthenticationFailHandler;
     @Bean
     public UserDetailsService userDetailsService() {
         return new AppUserDetailsService();
@@ -23,7 +30,10 @@ public class SecurityConfiguration {
                 .antMatchers("/login").permitAll()
                 .antMatchers("/rest*").hasRole("USER")
                 .anyRequest().authenticated()
+                .filterSecurityInterceptorOncePerRequest(true)
                 .and().formLogin()
+                .successHandler(appAuthenticationSuccessHandler)
+                .failureHandler(appAuthenticationFailHandler)
                 .and()
                 .logout().permitAll();
 

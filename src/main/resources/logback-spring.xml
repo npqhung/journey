@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+<!--  <include resource="com/google/cloud/spring/logging/logback-appender.xml" />-->
+    <!-- remember to set logging.file environment variable to set the file location -->
+    <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
+    <property name="LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE" value= "5MB"/>
+    <property name="FILE_LOG_PATTERN" value="%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n"/>
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>
+                %d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level) %logger{36}.%M - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+    <springProfile name="dev">
+        <logger name="org.springframework" level="INFO" additivity="false">
+            <appender-ref ref="STDOUT" />
+        </logger>
+        <logger name="org.springframework.security" level="DEBUG" additivity="false">
+            <appender-ref ref="STDOUT" />
+        </logger>
+        <logger name="my.boot.journey.security" level="DEBUG" additivity="false">
+            <appender-ref ref="STDOUT" />
+        </logger>
+        <logger name="my.boot.journey.controller" level="DEBUG" additivity="false">
+            <appender-ref ref="STDOUT" />
+        </logger>
+        <root level="INFO">
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+
+    <springProfile name="prod">
+        <logger name="org.springframework" level="INFO" >
+        </logger>
+        <logger name="org.springframework" level="INFO" additivity="false">
+            <appender-ref ref="FILE" />
+        </logger>
+        <logger name="org.springframework.security" level="DEBUG" additivity="false">
+            <appender-ref ref="v" />
+        </logger>
+        <logger name="my.boot.journey.security" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE" />
+        </logger>
+        <logger name="my.boot.journey.controller" level="DEBUG" additivity="false">
+            <appender-ref ref="FILE" />
+        </logger>
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+        </root>
+        <root level="INFO">
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
+    <springProfile name="!dev &amp; !prod">
+        <root level="INFO">
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+
+</configuration>
